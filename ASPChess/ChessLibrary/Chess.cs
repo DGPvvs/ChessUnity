@@ -14,6 +14,7 @@
         private Chess(Board board)
         {
             this.board = board;
+            this.Fen = board.Fen;
         }
 
         public string Fen
@@ -38,7 +39,6 @@
             Board newBoard = this.board.Move(figureMoving);
 
             Chess newChess = new Chess(newBoard);
-            newChess.Fen = newBoard.Fen;
 
             return newChess;
         }

@@ -5,8 +5,10 @@
 
     internal class Board
     {
+        private const string EigthOne = "11111111";
+
         private Figure[,] figures;
-        private string? fen;
+        private string? fen;        
 
         public Board(string fen)
         {
@@ -67,7 +69,7 @@
 
             result.MoveColor = this.MoveColor.FlipColor();
 
-            result.Fen = this.GenerateNewFen();
+            result.Fen = result.GenerateNewFen();
 
             return result;
         }
@@ -105,6 +107,11 @@
                 {
                     sb.Append("/");
                 }
+            }
+
+            for (int j = 8; j >= 2; j--)
+            {
+                sb.Replace(EigthOne.Substring(0, j), j.ToString());
             }
 
             return sb.ToString().TrimEnd();

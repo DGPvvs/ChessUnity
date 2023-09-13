@@ -2,7 +2,7 @@
 {
     internal enum Figure
     {
-        None,
+        None = '.',
 
         WhiteKing = 'K',
         WhiteQueen = 'Q',
