@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "FJkjiJTHX2+Zo9HH2qOQNxQPKBhTB9Mw26ZbQL0sxLkPLW2iMMMu+pf1qaxw1ls03T6fE43kqa8Yco+M7ZS+zw==",
+  "success": true,
+  "projectFilePath": "M:\\C#\\ASPChess\\ChessDemo\\ChessDemo.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.15\\microsoft.windowsdesktop.app.ref.6.0.15.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.15\\microsoft.netcore.app.ref.6.0.15.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.15\\microsoft.aspnetcore.app.ref.6.0.15.nupkg.sha512",
+    "C:\\Users\\PC\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.15\\microsoft.netcore.app.host.win-x64.6.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,12 @@
+M:\C#\ASPChess\ChessLibrary\bin\Debug\net6.0\ChessLibrary.deps.json
+M:\C#\ASPChess\ChessLibrary\bin\Debug\net6.0\ChessLibrary.dll
+M:\C#\ASPChess\ChessLibrary\bin\Debug\net6.0\ChessLibrary.pdb
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\ChessLibrary.csproj.AssemblyReference.cache
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\ChessLibrary.GeneratedMSBuildEditorConfig.editorconfig
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\ChessLibrary.AssemblyInfoInputs.cache
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\ChessLibrary.AssemblyInfo.cs
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\ChessLibrary.csproj.CoreCompileInputs.cache
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\ChessLibrary.dll
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\refint\ChessLibrary.dll
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\ChessLibrary.pdb
+M:\C#\ASPChess\ChessLibrary\obj\Debug\net6.0\ref\ChessLibrary.dll
