@@ -7,7 +7,7 @@
     {
         static void Main(string[] args)
         {
-            Chess chess = new Chess();
+            Chess chess = new Chess("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
 
             bool isLoopExit = false;
 
@@ -17,10 +17,7 @@
                 Console.WriteLine(chess.fen);
                 Print(ChessToAscii(chess));
 
-                foreach (string moves in chess.GetAllMoves())
-                {
-                    Console.WriteLine(moves);
-                }
+                Console.WriteLine(string.Join(Environment.NewLine, chess.GetAllMoves()));                
 
                 string move = Console.ReadLine();
 

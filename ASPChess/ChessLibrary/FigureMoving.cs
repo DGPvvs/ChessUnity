@@ -38,9 +38,9 @@
 
         public int DeltaY => To.Y - From.Y;
 
-        public int AbsDelayX => Math.Abs(DeltaX);
+        public int AbsDeltaX => Math.Abs(DeltaX);
 
-        public int AbsDelayY => Math.Abs(DeltaY);
+        public int AbsDeltaY => Math.Abs(DeltaY);
 
         public int SingX => Math.Sign(DeltaX);
 

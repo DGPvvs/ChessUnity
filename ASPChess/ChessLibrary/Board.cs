@@ -26,7 +26,16 @@
         {
             if (square.OnBoard())
             {
-                return figures[square.X, square.Y];
+                char f = (char)figures[square.X, square.Y];
+                if (f == '.')
+                {
+                    return Figure.None;
+                }
+                else
+                {
+                    Figure result = (Figure)f;
+                    return result;
+                }
             }
 
             return Figure.None;
@@ -90,7 +99,8 @@
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    if (figures[x, y].Equals(Figure.None))
+                    Figure f = figures[x, y];
+                    if ((char)f == '.' || f == Figure.None)
                     {
                         sb.Append("1");
                     }
@@ -165,9 +175,9 @@
         {
             foreach (Square square in Square.YieldSquares())
             {
-                if (this.GetFigureAt(square).GetColor().Equals(this.MoveColor))
+                if (GetFigureAt(square).GetColor() == MoveColor)
                 {
-                    yield return new FigureOnSquare(this.GetFigureAt(square), square);
+                    yield return new FigureOnSquare(GetFigureAt(square), square);
                 }
             }
 

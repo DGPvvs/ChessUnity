@@ -1,0 +1,668 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+public static class GlobalConstants
+{
+    public static class ErrorMessages
+    {
+        public const string WrongFEN = "Неправилен FEN!";
+    }
+}
+
+class Moves
+{
+    FigureMoving fm;
+    Board board;
+    
+    public Moves(Board board)
+    {
+        this.board = board;
+    }
+    
+    public bool CanMove(FigureMoving fm)
+    {
+        this.fm = fm;
+        bool result = this.CanMoveFrom() && this.CanMoveTo() && CanFigureMove();
+        
+        return result;
+    }
+    
+    bool CanFigureMove()
+    {
+        bool result = false;
+        
+        switch (fm.Figure)
+        {
+            case Figure.WhiteKing:
+            case Figure.BlackKing:
+                return CanKingMove();
+            
+            case Figure.WhiteQueen:
+            case Figure.BlackQueen:
+                return false;
+                
+            case Figure.WhiteRook:
+            case Figure.BlackRook:
+                return CanStraightMove();
+                
+            case Figure.WhiteBishop:
+            case Figure.BlackBishop:
+                return false;
+                
+            case Figure.WhiteKnight:
+            case Figure.BlackKnight:
+                return this.CanKnigthMove();
+                
+            case Figure.WhitePawn:
+            case Figure.BlackPawn:
+                return false;
+                
+            default:
+                return result;
+        }
+        
+        return result;
+    }
+    
+    private bool CanStraightMove()
+    {
+        if(!((fm.DeltaX == 0 && fm.DeltaY != 0) || (fm.DeltaY == 0 && fm.DeltaX != 0)))
+        {
+            return false;
+        }
+        
+        Square at = new Square(this.fm.From.X, this.fm.From.Y);
+        
+        do
+        {
+            at = new Square(at.X + this.fm.SingX, at.Y + this.fm.SingY);
+            Console.WriteLine($"{at.ToString()} - {board.GetFigureAt(at)}");
+            if (at != fm.To && (char)board.GetFigureAt(at) != (char)46)
+            {
+                return false;
+            }
+            if (at.Equals(this.fm.To))
+            {
+                return true;
+            }
+        } while (at.OnBoard() && this.board.GetFigureAt(at).GetColor() != board.MoveColor);
+        
+        return false;
+    }
+    
+    private bool CanKingMove()
+    {
+        if (fm.AbsDelayX <= 1 && fm.AbsDelayY <= 1)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private bool CanKnigthMove()
+    {
+        if (fm.AbsDelayX == 1 && fm.AbsDelayY == 2)
+        {
+            return true;
+        }
+        
+        if (fm.AbsDelayX == 2 && fm.AbsDelayY == 1)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    bool CanMoveTo()
+    {
+        bool result = fm.To.OnBoard()
+            && fm.From != fm.To
+            && board.GetFigureAt(fm.To).GetColor() != board.MoveColor;
+            
+        return result;
+    }
+    
+    bool CanMoveFrom()
+    {
+        bool result = fm.From.OnBoard()
+            && fm.Figure.GetColor() == board.MoveColor;
+            
+        return result;
+    }
+}
+
+class FigureOnSquare
+{
+    public FigureOnSquare(Figure figure, Square square)
+    {
+        this.Figure = figure;
+        this.Square = square;
+    }
+    
+    public Figure Figure { get; private set; }
+    public Square Square { get; private set; }
+}
+
+class FigureMoving
+{
+    public FigureMoving(FigureOnSquare figureOnSquare, Square to, Figure promotion = Figure.None)
+    {
+        this.Figure = figureOnSquare.Figure;
+        this.From = figureOnSquare.Square;
+        this.To = to;
+        this.Promotion = promotion;
+    }
+    
+    public FigureMoving(string move)
+    {
+        this.Figure = (Figure)move[0];
+        this.From = new Square(move.Substring(1, 2));
+        this.To = new Square(move.Substring(3, 2));
+        
+        if (move.Length == 6)
+        {
+            this.Promotion = (Figure)move[5];
+        }
+        else
+        {
+            this.Promotion = Figure.None;
+        }
+    }
+    
+    public Figure Figure { get; private set; }
+    public Square From { get; private set; }
+    public Square To { get; private set; }
+    public Figure Promotion { get; private set; }
+    public int DeltaX => To.X - From.X;
+    public int DeltaY => To.Y - From.Y;
+    public int AbsDelayX => Math.Abs(DeltaX);
+    public int AbsDelayY => Math.Abs(DeltaY);
+    public int SingX => Math.Sign(DeltaX);
+    public int SingY => Math.Sign(DeltaY);
+    public int AbsSingX => Math.Abs(SingX);
+    public int AbsSingY => Math.Abs(SingY);
+    
+    public override string ToString()
+    {
+        string promotion = string.Empty;
+        
+        if (!this.Promotion.Equals(Figure.None))
+        {
+            promotion = this.Promotion.ToString();
+        }
+        
+        return $"{this.Figure.ToString()}{this.From.Name}{this.To.Name}{promotion}";
+    }
+}
+
+struct Square
+{
+    public static Square none = new Square(-1, -1);
+    
+    public Square(int x, int y)
+    {
+        this.X = x;
+        this.Y = y;
+    }
+    
+    public Square(string e2) : this(-1, -1)
+    {
+        bool isValid = e2.Length.Equals(2) && e2[0] >= 'a' && e2[0] <= 'h' && e2[1] >= '1' && e2[1] <= '8';
+        if (isValid)
+        {
+            this.X = e2[0] - 'a';
+            this.Y = e2[1] - '1';
+        }
+        else
+        {
+            this = none;
+        }
+    }
+    
+    public int X { get; private set; }
+    public int Y { get; private set; }
+    public string Name => $"{(char)('a' + this.X)}{this.Y + 1}";
+    
+    public bool OnBoard()
+    {
+        bool isValid = this.X >= 0 && this.X < 8;
+        isValid = isValid && this.Y >= 0 && this.Y < 8;
+        
+        return isValid;
+    }
+    
+    public static bool operator ==(Square square1, Square square2) => square1.X == square2.X && square1.Y == square2.Y;
+    public static bool operator !=(Square square1, Square square2) => square1.X != square2.X || square1.Y != square2.Y;
+    
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || ! this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+        else
+        {
+            Square s = (Square) obj;
+            return (X == s.X) && (Y == s.Y);
+        }
+    }
+    
+    public override int GetHashCode() => (X << 2) ^ Y;
+    
+    public override string ToString()
+        {
+            return $"{Name}";
+        }
+    
+    public static IEnumerable<Square> YieldSquares()
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                yield return new Square(x, y);
+            }
+        }
+    }
+}
+
+enum Color
+{
+    None = 0,
+    While = 1,
+    Black = 2
+}
+
+static class ColorMethod
+{
+    public static Color FlipColor(this Color color)
+    {
+        if (color.Equals(Color.Black))
+        {
+            return Color.While;
+        }
+        
+        if (color.Equals(Color.While))
+        {
+            return Color.Black;
+        }
+        
+        return Color.None;
+    }
+}
+
+enum Figure
+{
+    None,
+    
+    WhiteKing = 'K',
+    WhiteQueen = 'Q',
+    WhiteRook = 'R',
+    WhiteBishop = 'B',
+    WhiteKnight = 'N',
+    WhitePawn = 'P',
+    
+    BlackKing = 'k',
+    BlackQueen = 'q',
+    BlackRook = 'r',
+    BlackBishop = 'b',
+    BlackKnight = 'n',
+    BlackPawn = 'p'
+}
+
+internal static class FigureMethod
+{
+    public static char ToChar(this Figure figure)
+    {
+        return (char)figure;
+    }
+    
+    public static Color GetColor(this Figure figure)
+    {
+        if (figure.ToString().Contains("White"))
+        {
+            return Color.While;
+        }
+        
+        if (figure.ToString().Contains("Black"))
+        {
+            return Color.Black;
+        }
+        
+        return Color.None;
+    }
+}
+
+class Board
+{
+    private const string EigthOne = "11111111";
+    
+    Figure[,] figures;
+    
+    public Board(string fen)
+    {
+        this.Fen = fen;
+        figures = new Figure[8, 8];
+        Init();
+    }
+    
+    public string Fen { get; private set; }
+    public Color MoveColor { get; private set; }
+    public int MoveNumber { get; private set; }
+    
+    public Figure GetFigureAt(Square square)
+    {
+        if (square.OnBoard())
+        {
+            return figures[square.X, square.Y];
+        }
+        
+        return Figure.None;
+    }
+    
+    public void SetFigureAt(Square square, Figure figure)
+    {
+        if (square.OnBoard())
+        {
+            this.figures[square.X, square.Y] = figure;
+        }
+    }
+    
+    public Board Move(FigureMoving fm)
+    {
+        Board next = new Board(this.Fen);
+        next.SetFigureAt(fm.From, Figure.None);
+        Figure figure = Figure.None;
+        
+        if (fm.Promotion == Figure.None)
+        {
+            figure = fm.Figure;
+        }
+        else
+        {
+            figure = fm.Promotion;
+        }
+        
+        next.SetFigureAt(fm.To, figure);
+        
+        if (MoveColor == Color.Black)
+        {
+            next.MoveNumber++;
+        }
+        
+        next.MoveColor = MoveColor.FlipColor();
+        next.GenerateNewFen();
+        
+        return next;
+    }
+    
+    void GenerateNewFen()
+    {
+        string color = "w";
+        if (this.MoveColor.Equals(Color.Black))
+        {
+            color = "b";
+        }
+        
+        Fen = $"{FenFigures()} {color} - - 0 {MoveNumber}";
+    }
+    
+    string FenFigures()
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        for (int y = 7; y >= 0; y--)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                if (figures[x, y].Equals(Figure.None))
+                {
+                    sb.Append("1");
+                }
+                else
+                {
+                    sb.Append(figures[x, y].ToChar());
+                }
+            }
+            
+            if (y > 0)
+            {
+                sb.Append("/");
+            }
+        }
+        
+        for (int j = 8; j >= 2; j--)
+        {
+            sb.Replace(EigthOne.Substring(0, j), j.ToString());
+        }
+        
+        return sb.ToString().TrimEnd();
+    }
+    
+    void Init()
+    {
+        string[] parts = Fen.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length != 6)
+        {
+            throw new ArgumentOutOfRangeException(GlobalConstants.ErrorMessages.WrongFEN);
+        }
+        
+        this.InitFigures(parts[0]);
+        this.MoveColor = Color.While;
+        
+        if (parts[1] == "b")
+        {
+            this.MoveColor = Color.Black;
+        }
+        
+        this.MoveNumber = int.Parse(parts[5]);
+    }
+    
+    void InitFigures(string data)
+    {
+        for (int j = 8; j >= 2; j--)
+        {
+            data = data.Replace(j.ToString(), $"{j - 1}1");
+        }
+        
+        data = data.Replace('1', '.');
+        string[] lines = data.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        
+        for (int y = 7; y >= 0; y--)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                Figure figure = Figure.None;
+                
+                if (!lines[7 - y][x].Equals("."))
+                {
+                    figure = (Figure)lines[7 - y][x];
+                }
+                
+                this.figures[x, y] = figure;
+            }
+        }
+    }
+    
+    public IEnumerable<FigureOnSquare> YieldFigures()
+    {
+        foreach (Square square in Square.YieldSquares())
+        {
+            if (this.GetFigureAt(square).GetColor().Equals(this.MoveColor))
+            {
+                yield return new FigureOnSquare(this.GetFigureAt(square), square);
+            }
+        }
+    }
+}
+
+public class Chess
+{
+    Board board;
+    Moves moves;
+    
+    public string fen { get; private set; }
+    private IList<FigureMoving> allMoves;
+    
+    public Chess(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+    {
+        this.fen = fen;
+        board = new Board(fen);
+        moves = new Moves(board);
+        
+        this.allMoves = new List<FigureMoving>();
+    }
+    
+    Chess(Board board)
+    {
+        this.board = board;
+        this.fen = board.Fen;
+        moves = new Moves(board);
+        
+        this.allMoves = new List<FigureMoving>();
+    }
+    
+    public Chess Move(string move)
+    {
+        FigureMoving fm = new FigureMoving(move);
+        
+        if (!moves.CanMove(fm))
+        {
+            return this;
+        }
+        
+        Board nextBoard = board.Move(fm);
+        Chess nextChess = new Chess(nextBoard);
+        
+        return nextChess;
+    }
+    
+    public char GetFigureAt(int x, int y)
+    {
+        Square square = new Square(x, y);
+        Figure f = this.board.GetFigureAt(square);
+        
+        char result = '.';
+        
+        if (!f.Equals(Figure.None))
+        {
+            result = f.ToChar();
+        }
+        
+        return result;
+    }
+    
+    public void FindAllMoves()
+    {
+        this.allMoves = new List<FigureMoving>();
+        
+        foreach (FigureOnSquare figureOnSquare in this.board.YieldFigures())
+        {
+            foreach (Square to in Square.YieldSquares())
+            {
+                FigureMoving fm = new FigureMoving(figureOnSquare, to);
+                
+                if (this.moves.CanMove(fm))
+                {
+                    this.allMoves.Add(fm);
+                }
+            }
+        }
+    }
+    
+    public IList<string> GetAllMoves()
+    {
+        this.FindAllMoves();
+        
+        List<string> list = new List<string>();
+        foreach (FigureMoving figureMoving in this.allMoves)
+        {
+            list.Add(figureMoving.ToString());
+        }
+        
+        return list;
+    }
+}
+
+class HelloWorld
+{
+    static void Main()
+    {
+        Chess chess = new Chess("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
+        
+        bool isLoopExit = false;
+        
+        while (!isLoopExit)
+        {
+            Console.Clear();
+            Console.WriteLine(chess.fen);
+            Print(ChessToAscii(chess));
+            
+            foreach (string moves in chess.GetAllMoves())
+            {
+                Console.WriteLine(moves);
+            }
+            
+            string move = Console.ReadLine();
+            
+            if (string.IsNullOrEmpty(move))
+            {
+                isLoopExit = true;
+            }
+            else
+            {
+                chess = chess.Move(move);
+            }
+        }
+    }
+    
+    static string ChessToAscii(Chess chess)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($" +-----------------+");
+        
+        for (int y = 7; y >= 0; y--)
+        {
+            sb.Append($"{y + 1} | ");
+            
+            for (int x = 0; x < 8; x++)
+            {
+                sb.Append($"{chess.GetFigureAt(x, y)} ");
+            }
+            
+            sb.AppendLine("|");
+        }
+        
+        sb.AppendLine($" +-----------------+");
+        sb.AppendLine($"    a b c d e f g h");
+        
+        return sb.ToString();
+    }
+    
+    static void Print(string text)
+    {
+        ConsoleColor oldForeColor = Console.ForegroundColor;
+        foreach (var x in text)
+        {
+            if (x >= 'a' && x <= 'z')
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+            else if (x >= 'A' && x <= 'Z')
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+            }
+            
+            Console.Write(x);
+        }
+        
+        Console.ForegroundColor = oldForeColor;
+    }
+}

@@ -30,11 +30,11 @@
 
                 case Figure.WhiteQueen:
                 case Figure.BlackQueen:
-                    return false;
+                    return CanStraightMove();
 
                 case Figure.WhiteRook:
                 case Figure.BlackRook:
-                    return CanStraightMove(); 
+                    return false; 
 
                 case Figure.WhiteBishop:
                 case Figure.BlackBishop:
@@ -57,23 +57,24 @@
 
         private bool CanStraightMove()
         {
-            Square at = new Square(this.fm.From.X, this.fm.From.Y);
+            Square at = fm.From;
 
             do
             {
-                at = new Square(at.X + this.fm.SingX, at.Y + this.fm.SingY);
-                if (at.Equals(this.fm.To))
+                at = new Square(at.X + fm.SingX, at.Y + fm.SingY);
+                Figure f = board.GetFigureAt(at);
+                if (at == fm.To)
                 {
                     return true;
                 }
-            } while (at.OnBoard() && this.board.GetFigureAt(at).Equals(Figure.None));
+            } while (at.OnBoard() && board.GetFigureAt(at) == Figure.None);
 
             return false;
         }
 
         private bool CanKingMove()
         {
-            if (fm.AbsDelayX <= 1 && fm.AbsDelayY <= 1)
+            if (fm.AbsDeltaX <= 1 && fm.AbsDeltaY <= 1)
             {
                 return true;
             }
@@ -83,12 +84,12 @@
 
         private bool CanKnigthMove()
         {
-            if (fm.AbsDelayX == 1 && fm.AbsDelayY == 2)
+            if (fm.AbsDeltaX == 1 && fm.AbsDeltaY == 2)
             {
                 return true;
             }
 
-            if (fm.AbsDelayX == 2 && fm.AbsDelayY == 1)
+            if (fm.AbsDeltaX == 2 && fm.AbsDeltaY == 1)
             {
                 return true;
             }

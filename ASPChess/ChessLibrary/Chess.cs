@@ -7,7 +7,7 @@
 
         public string fen { get; private set; }
 
-        private IList<FigureMoving> allMoves;
+        IList<FigureMoving> allMoves;
         
         public Chess(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         {
@@ -58,15 +58,15 @@
             return result;
         }
 
-        public void FindAllMoves()
+        void FindAllMoves()
         {
-            this.allMoves = new List<FigureMoving>();
+            allMoves = new List<FigureMoving>();
 
-            foreach (FigureOnSquare figureOnSquare in this.board.YieldFigures())
+            foreach (FigureOnSquare fs in board.YieldFigures())
             {
                 foreach (Square to in Square.YieldSquares())
                 {
-                    FigureMoving fm = new FigureMoving(figureOnSquare, to);
+                    FigureMoving fm = new FigureMoving(fs, to);
 
                     if (this.moves.CanMove(fm))
                     {
