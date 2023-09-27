@@ -1,6 +1,6 @@
 ﻿namespace ChessLibrary
 {
-    internal class FigureMoving
+    class FigureMoving : IComparable<FigureMoving>
     {
         public FigureMoving(FigureOnSquare figureOnSquare, Square to, Figure promotion = Figure.None)
         {
@@ -16,7 +16,7 @@
             this.From = new Square(move.Substring(1, 2));
             this.To = new Square(move.Substring(3, 2));
 
-            if (move.Length.Equals(6))
+            if (move.Length == 6)
             {
                 this.Promotion = (Figure)move[5];
             }
@@ -26,12 +26,66 @@
             }
         }
 
-        public Figure Figure { get; init; }
+        public Figure Figure { get; private set; }
 
-        public Square From { get; init; }
+        public Square From { get; private set; }
 
-        public Square To { get; init; }
+        public Square To { get; private set; }
 
-        public Figure Promotion { get; init; }
+        public Figure Promotion { get; private set; }
+
+        public int DeltaX => To.X - From.X;
+
+        public int DeltaY => To.Y - From.Y;
+
+        public int AbsDelayX => Math.Abs(DeltaX);
+
+        public int AbsDelayY => Math.Abs(DeltaY);
+
+        public int SingX => Math.Sign(DeltaX);
+
+        public int SingY => Math.Sign(DeltaY);
+
+        public int CompareTo(FigureMoving other)
+        {
+            int comp = this.From.X.CompareTo(other.To.X);
+
+            if (comp == 0)
+            {
+                comp = this.From.Y.CompareTo(other.To.Y);
+            }
+
+            return comp;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            FigureMoving? fm = obj as FigureMoving;
+
+            if (fm is null)
+            {
+                return false;
+            }
+
+            return fm.CompareTo(this).Equals(0);
+        }
+
+        public override int GetHashCode()
+        {
+            return ((this.From.X.GetHashCode() ^ 2) * this.From.Y.GetHashCode())
+                 + ((this.To.X.GetHashCode() ^ 2) * this.To.Y.GetHashCode());
+        }
+
+        public override string ToString()
+        {
+            string promotion = string.Empty;
+
+            if (!this.Promotion.Equals(Figure.None))
+            {
+                promotion = this.Promotion.ToString();
+            }
+
+            return $"{this.Figure.ToString()}{this.From.Name}{this.To.Name}{promotion}";
+        }
     }
 }

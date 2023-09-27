@@ -1,8 +1,10 @@
 ﻿namespace ChessLibrary
 {
-    internal enum Figure
+    using System.ComponentModel;
+
+    enum Figure
     {
-        None = '.',
+        None,
 
         WhiteKing = 'K',
         WhiteQueen = 'Q',
@@ -25,5 +27,21 @@
         {
             return (char)figure;
         }
+
+        public static Color GetColor(this Figure figure)
+        {
+            if (figure.ToString().Contains("White"))
+            {
+                return Color.While;
+            }
+
+            if (figure.ToString().Contains("Black"))
+            {
+                return Color.Black;
+            }
+
+            return Color.None;
+        }
     }
+
 }

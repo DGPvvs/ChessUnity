@@ -1,7 +1,6 @@
 ﻿namespace ChessDemo
 {
     using ChessLibrary;
-    using System.Runtime.CompilerServices;
     using System.Text;
 
     public class Program
@@ -15,8 +14,14 @@
             while (!isLoopExit)
             {
                 Console.Clear();
-                Console.WriteLine(chess.Fen);
+                Console.WriteLine(chess.fen);
                 Print(ChessToAscii(chess));
+
+                foreach (string moves in chess.GetAllMoves())
+                {
+                    Console.WriteLine(moves);
+                }
+
                 string move = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(move))

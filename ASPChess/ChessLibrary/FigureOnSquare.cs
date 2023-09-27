@@ -1,6 +1,6 @@
 ﻿namespace ChessLibrary
 {
-    internal class FigureOnSquare
+    class FigureOnSquare
     {
         public FigureOnSquare(Figure figure, Square square)
         {
@@ -8,8 +8,8 @@
             this.Square = square;
         }
 
-        public Figure Figure { get; init; }
+        public Figure Figure { get; private set; }
 
-        public Square Square { get; init; }
+        public Square Square { get; private set; }
     }
 }

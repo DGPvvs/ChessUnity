@@ -2,60 +2,92 @@
 {
     public class Chess
     {
-        private string fen;
-        private Board board;
+        Board board;
+        Moves moves;
 
+        public string fen { get; private set; }
+
+        private IList<FigureMoving> allMoves;
+        
         public Chess(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         {
-            this.Fen = fen;
-            this.board = new Board(this.Fen);
+            this.fen = fen;
+            board = new Board(fen);
+            moves = new Moves(board);            
+
+            this.allMoves = new List<FigureMoving>();
         }
 
-        private Chess(Board board)
+        Chess(Board board)
         {
             this.board = board;
-            this.Fen = board.Fen;
+            this.fen = board.Fen;
+            moves = new Moves(board);
+
+            this.allMoves = new List<FigureMoving>();
         }
-
-        public string Fen
-        {
-            get => this.fen;
-
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ArgumentException("Невалиден аргумент!");
-                }
-
-                this.fen = value;
-            }            
-        }
-
+        
         public Chess Move(string move)
         {
-            FigureMoving figureMoving = new FigureMoving(move);
+            FigureMoving fm = new FigureMoving(move);
 
-            Board newBoard = this.board.Move(figureMoving);
+            if (!moves.CanMove(fm))
+            {
+                return this;
+            }
 
-            Chess newChess = new Chess(newBoard);
+            Board nextBoard = board.Move(fm);
 
-            return newChess;
+            Chess nextChess = new Chess(nextBoard);
+
+            return nextChess;
         }
 
         public char GetFigureAt(int x, int y)
         {
             Square square = new Square(x, y);
-            Figure figure = this.board.GetFigureAt(square);
+            Figure f = this.board.GetFigureAt(square);
 
             char result = '.';
 
-            if (!figure.Equals(Figure.None))
+            if (!f.Equals(Figure.None))
             {
-                result = figure.ToChar();
+                result = f.ToChar();
             }
 
             return result;
+        }
+
+        public void FindAllMoves()
+        {
+            this.allMoves = new List<FigureMoving>();
+
+            foreach (FigureOnSquare figureOnSquare in this.board.YieldFigures())
+            {
+                foreach (Square to in Square.YieldSquares())
+                {
+                    FigureMoving fm = new FigureMoving(figureOnSquare, to);
+
+                    if (this.moves.CanMove(fm))
+                    {
+                        this.allMoves.Add(fm);
+                    }
+                }
+            }
+        }
+
+        public IList<string> GetAllMoves()
+        {
+            this.FindAllMoves();
+
+            List<string> list = new List<string>();
+
+            foreach (FigureMoving figureMoving in this.allMoves)
+            {
+                list.Add(figureMoving.ToString());
+            }
+
+            return list;
         }
     }
 }

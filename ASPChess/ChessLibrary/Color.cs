@@ -1,13 +1,13 @@
 ﻿namespace ChessLibrary
 {
-    internal enum Color
+    enum Color
     {
         None = 0,
         While = 1,
         Black = 2
     }
 
-    internal static class ColorMethod
+    static class ColorMethod
     {
         public static Color FlipColor(this Color color)
         {

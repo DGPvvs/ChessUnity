@@ -1,26 +1,22 @@
 ﻿namespace ChessLibrary
 {
+    using System.Collections.Generic;
     using System.Text;
     using static ChessLibrary.Commons.GlobalConstants.ErrorMessages;
 
-    internal class Board
+    class Board
     {
         private const string EigthOne = "11111111";
 
-        private Figure[,] figures;
-        private string? fen;        
+        Figure[,] figures;
 
         public Board(string fen)
         {
             this.Fen = fen;
-            this.figures = new Figure[8, 8];
-            this.Init();            
+            figures = new Figure[8, 8];
+            Init();
         }
-        public string Fen
-        {
-            get => this.fen;
-            private set => this.fen = value;
-        }
+        public string Fen { get; private set; }
 
         public Color MoveColor { get; private set; }
 
@@ -30,7 +26,7 @@
         {
             if (square.OnBoard())
             {
-                return this.figures[square.X, square.Y];
+                return figures[square.X, square.Y];
             }
 
             return Figure.None;
@@ -44,37 +40,38 @@
             }
         }
 
-        public Board Move(FigureMoving figureMoving)
+        public Board Move(FigureMoving fm)
         {
-            Board result = new Board(this.Fen);
+            Board next = new Board(this.Fen);
+
+            next.SetFigureAt(fm.From, Figure.None);
+
             Figure figure = Figure.None;
 
-            result.SetFigureAt(figureMoving.From, figure);
-
-            if (figureMoving.Promotion.Equals(figure))
+            if (fm.Promotion == Figure.None)
             {
-                figure = figureMoving.Figure;
+                figure = fm.Figure;
             }
             else
             {
-                figure = figureMoving.Promotion;
+                figure = fm.Promotion;
             }
 
-            result.SetFigureAt(figureMoving.To, figure);
+            next.SetFigureAt(fm.To, figure);
 
-            if (this.MoveColor.Equals(Color.Black))
+            if (MoveColor == Color.Black)
             {
-                this.MoveNumber++;
+                next.MoveNumber++;
             }
 
-            result.MoveColor = this.MoveColor.FlipColor();
+            next.MoveColor = MoveColor.FlipColor();
 
-            result.Fen = result.GenerateNewFen();
+            next.GenerateNewFen();
 
-            return result;
+            return next;
         }
 
-        private string GenerateNewFen()
+        void GenerateNewFen()
         {
             string color = "w";
             if (this.MoveColor.Equals(Color.Black))
@@ -82,10 +79,10 @@
                 color = "b";
             }
 
-            return $"{this.FenFigures()} {color} - - 0 {this.MoveNumber}";
+            Fen = $"{FenFigures()} {color} - - 0 {MoveNumber}";
         }
 
-        private string FenFigures()
+        string FenFigures()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -93,13 +90,13 @@
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    if (this.figures[x, y].Equals(Figure.None))
+                    if (figures[x, y].Equals(Figure.None))
                     {
                         sb.Append("1");
                     }
                     else
                     {
-                        sb.Append(this.figures[x, y].ToChar());
+                        sb.Append(figures[x, y].ToChar());
                     }
                 }
 
@@ -117,29 +114,27 @@
             return sb.ToString().TrimEnd();
         }
 
-        private void Init()
+        void Init()
         {
-            string[] fenParts = this.Fen.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (!fenParts.Length.Equals(6))
+            string[] parts = Fen.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 6)
             {
                 throw new ArgumentOutOfRangeException(WrongFEN);
             }
 
-            this.InitFigures(fenParts[0]);
+            this.InitFigures(parts[0]);
 
-            if (fenParts[1].Equals("b"))
+            this.MoveColor = Color.While;
+
+            if (parts[1] == "b")
             {
                 this.MoveColor = Color.Black;
             }
-            else
-            {
-                this.MoveColor = Color.While;
-            }
 
-            this.MoveNumber = int.Parse(fenParts[5]);
+            this.MoveNumber = int.Parse(parts[5]);
         }
 
-        private void InitFigures(string data)
+        void InitFigures(string data)
         {
             for (int j = 8; j >= 2; j--)
             {
@@ -160,10 +155,22 @@
                     {
                         figure = (Figure)lines[7 - y][x];
                     }
-                    
+
                     this.figures[x, y] = figure;
                 }
-            }            
+            }
+        }
+
+        public IEnumerable<FigureOnSquare> YieldFigures()
+        {
+            foreach (Square square in Square.YieldSquares())
+            {
+                if (this.GetFigureAt(square).GetColor().Equals(this.MoveColor))
+                {
+                    yield return new FigureOnSquare(this.GetFigureAt(square), square);
+                }
+            }
+
         }
     }
 }
