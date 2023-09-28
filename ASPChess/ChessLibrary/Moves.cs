@@ -34,11 +34,18 @@
 
                 case Figure.WhiteRook:
                 case Figure.BlackRook:
-                    return false; 
-
+                    if (fm.SingX == 0 || fm.SingY == 0)
+                    {
+                        return CanStraightMove(); 
+                    }
+                    break;
                 case Figure.WhiteBishop:
                 case Figure.BlackBishop:
-                    return false;
+                    if (fm.SingX != 0 && fm.SingY != 0)
+                    {
+                        return CanStraightMove();
+                    }
+                    break;
 
                 case Figure.WhiteKnight:
                 case Figure.BlackKnight:

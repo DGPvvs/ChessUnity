@@ -80,12 +80,12 @@
         {
             string promotion = string.Empty;
 
-            if (!this.Promotion.Equals(Figure.None))
+            if (Promotion != Figure.None)
             {
-                promotion = this.Promotion.ToString();
+                promotion = Promotion.ToString();
             }
 
-            return $"{this.Figure.ToString()}{this.From.Name}{this.To.Name}{promotion}";
+            return $"{Figure.ToString()} {From.Name} {To.Name} {promotion}";
         }
     }
 }

@@ -30,12 +30,12 @@
         public int X { get; private set; }
         public int Y { get; private set; }
 
-        public string Name => $"{(char)('a' + this.X)}{this.Y + 1}";
+        public string Name => $"{(char)('a' + X)}{Y + 1}";
 
         public bool OnBoard()
         {
-            bool isValid = this.X >= 0 && this.X < 8;
-            isValid = isValid && this.Y >= 0 && this.Y < 8;
+            bool isValid = X >= 0 && X < 8;
+            isValid = isValid && Y >= 0 && Y < 8;
 
             return isValid;
         }

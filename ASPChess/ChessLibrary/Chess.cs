@@ -78,13 +78,13 @@
 
         public IList<string> GetAllMoves()
         {
-            this.FindAllMoves();
+            FindAllMoves();
 
             List<string> list = new List<string>();
 
-            foreach (FigureMoving figureMoving in this.allMoves)
+            foreach (FigureMoving fm in allMoves)
             {
-                list.Add(figureMoving.ToString());
+                list.Add(fm.ToString());
             }
 
             return list;
